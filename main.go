@@ -5,16 +5,6 @@ import (
 	"net/http"
 )
 
-type (
-	Callsign struct {
-		Call string
-	}
-	Response struct {
-		ResponseType string `json:"response_type"`
-		Text         string `json:"text"`
-	}
-)
-
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/callsign", getCallSignInfo)

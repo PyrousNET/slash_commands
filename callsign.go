@@ -5,8 +5,13 @@ import (
 	"fmt"
 	"github.com/pyrousnet/slash_commands/Callook"
 	"github.com/pyrousnet/slash_commands/HamDb"
+	"github.com/pyrousnet/slash_commands/MatterMost"
 	"net/http"
 )
+
+type Callsign struct {
+	Call string
+}
 
 func getCallSignInfo(w http.ResponseWriter, r *http.Request) {
 	text := r.URL.Query().Get("text")
@@ -23,7 +28,7 @@ func getCallSignInfo(w http.ResponseWriter, r *http.Request) {
 
 	mmrstr := hCS.GetResponseString()
 
-	rs := Response{
+	rs := MatterMost.Response{
 		ResponseType: "in_channel",
 		Text:         string(mmrstr),
 	}
