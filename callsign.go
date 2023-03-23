@@ -18,7 +18,6 @@ func getCallSignInfo(w http.ResponseWriter, r *http.Request) {
 	var c Callsign = Callsign{Call: text}
 
 	err, hCS := HamDb.PullFromHamDb(c.Call)
-	err = fmt.Errorf("test", 500)
 	if err != nil {
 		err, hCS = Callook.PullFromCallook(c.Call)
 		if err != nil {
