@@ -42,9 +42,9 @@ type Response struct {
 	} `json:"otherInfo"`
 }
 
-func PullFromCallook(callsign string) (error, *MatterMost.Response) {
+func PullFromCallook(callsign string) (error, *MatterMost.HamCallSign) {
 	var r Response
-	var mmr MatterMost.Response
+	var mmr MatterMost.HamCallSign
 
 	resp, err := http.Get("http://callook.info/" + callsign + "/json")
 	if err != nil {
@@ -66,8 +66,8 @@ func PullFromCallook(callsign string) (error, *MatterMost.Response) {
 	return nil, &mmr
 }
 
-func createMatterMostResponse(r Response) MatterMost.Response {
-	return MatterMost.Response{
+func createMatterMostResponse(r Response) MatterMost.HamCallSign {
+	return MatterMost.HamCallSign{
 		CallSign: r.Current.Callsign,
 		Name:     r.Name,
 		City:     r.Address.Line2,
