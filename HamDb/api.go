@@ -36,9 +36,9 @@ type (
 	}
 )
 
-func PullFromHamDb(callsign string) (error, *MatterMost.Response) {
+func PullFromHamDb(callsign string) (error, *MatterMost.HamCallSign) {
 	var r Response
-	var mmr MatterMost.Response
+	var hCS MatterMost.HamCallSign
 
 	resp, err := http.Get("http://api.hamdb.org/v1/" + callsign + "/json")
 	if err != nil {
@@ -55,13 +55,13 @@ func PullFromHamDb(callsign string) (error, *MatterMost.Response) {
 		return err, nil
 	}
 
-	mmr = createMatterMostResponse(r)
+	hCS = createMatterMostResponse(r)
 
-	return nil, &mmr
+	return nil, &hCS
 }
 
-func createMatterMostResponse(r Response) MatterMost.Response {
-	return MatterMost.Response{
+func createMatterMostResponse(r Response) MatterMost.HamCallSign {
+	return MatterMost.HamCallSign{
 		CallSign: r.Hamdb.Callsign.Call,
 		Name:     r.Hamdb.Callsign.Fname + " " + r.Hamdb.Callsign.Mi + " " + r.Hamdb.Callsign.Name,
 		City:     r.Hamdb.Callsign.Addr2 + ", " + r.Hamdb.Callsign.State + " " + r.Hamdb.Callsign.Zip,

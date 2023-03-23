@@ -24,16 +24,16 @@ func getCallSignInfo(w http.ResponseWriter, r *http.Request) {
 	text := r.URL.Query().Get("text")
 	var c Callsign = Callsign{Call: text}
 
-	err, mmr := HamDb.PullFromHamDb(c.Call)
+	err, hCS := HamDb.PullFromHamDb(c.Call)
 	err = fmt.Errorf("test", 500)
 	if err != nil {
-		err, mmr = Callook.PullFromCallook(c.Call)
+		err, hCS = Callook.PullFromCallook(c.Call)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
 	}
 
-	mmrstr := getMatterMostStringFromMMResponse(mmr)
+	mmrstr := hCS.GetResponseString()
 
 	rs := Response{
 		ResponseType: "in_channel",
@@ -49,7 +49,7 @@ func getCallSignInfo(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(b))
 }
 
-func getMatterMostStringFromMMResponse(r *MatterMost.Response) string {
+func getMatterMostStringFromMMResponse(r *MatterMost.HamCallSign) string {
 	return "| Data | Value |\n| :------ | :-------|\n| Callsign | " + r.CallSign +
 		" |\n| Name | " + r.Name +
 		" |\n| City | " + r.City +
