@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/pyrousnet/slash_commands/Callook"
 	"github.com/pyrousnet/slash_commands/HamDb"
-	"github.com/pyrousnet/slash_commands/MatterMost"
 	"log"
 	"net/http"
 )
@@ -47,15 +46,6 @@ func getCallSignInfo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write([]byte(b))
-}
-
-func getMatterMostStringFromMMResponse(r *MatterMost.HamCallSign) string {
-	return "| Data | Value |\n| :------ | :-------|\n| Callsign | " + r.CallSign +
-		" |\n| Name | " + r.Name +
-		" |\n| City | " + r.City +
-		" |\n| Last3 | " + r.Last3 +
-		" |\n| Class | " + r.Class +
-		" |\n| Status | " + r.Status + " |"
 }
 
 func main() {
