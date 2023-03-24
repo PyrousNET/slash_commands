@@ -117,5 +117,6 @@ func getBookInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Add("Content-Type", "application/json")
 	w.Write([]byte(toMM))
 }
