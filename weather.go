@@ -108,34 +108,47 @@ func getWeatherInfo(w http.ResponseWriter, r *http.Request) {
 	var wt Weather
 	var f Forcast
 	text := r.URL.Query().Get("text")
+	fmt.Printf("\033[32mIncomming weather request for:\033[0m\033[36m " + text + "\033[0m\n")
 	resp, err := http.Get("https://api.weather.gov/points/" + text)
 	if err != nil {
+		fmt.Printf("\033[31mError: " + err.Error() + "\033[0m\n")
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
+		fmt.Printf("\033[31mError: " + err.Error() + "\033[0m\n")
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	err = json.Unmarshal([]byte(body), &wt)
 	if err != nil {
+		fmt.Printf("\033[31mError: " + err.Error() + "\033[0m\n")
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	resp, err = http.Get(wt.Properties.Forecast)
 	if err != nil {
+		fmt.Printf("\033[31mError: " + err.Error() + "\033[0m\n")
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
+		fmt.Printf("\033[31mError: " + err.Error() + "\033[0m\n")
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	err = json.Unmarshal([]byte(body), &f)
 	if err != nil {
+		fmt.Printf("\033[31mError: " + err.Error() + "\033[0m\n")
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	rs := MatterMost.Response{
@@ -158,7 +171,8 @@ func getWeatherInfo(w http.ResponseWriter, r *http.Request) {
 
 	toMM, err := json.Marshal(rs)
 	if err != nil {
-		fmt.Printf("Error: %s", err)
+		fmt.Printf("\033[31mError: " + err.Error() + "\033[0m\n")
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
