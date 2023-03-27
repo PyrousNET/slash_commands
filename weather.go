@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/pyrousnet/slash_commands/Color"
 	"github.com/pyrousnet/slash_commands/MatterMost"
 	"io/ioutil"
 	"net/http"
@@ -108,45 +109,52 @@ func getWeatherInfo(w http.ResponseWriter, r *http.Request) {
 	var wt Weather
 	var f Forcast
 	text := r.URL.Query().Get("text")
-	fmt.Printf("\033[32mIncomming weather request for:\033[0m\033[36m " + text + "\033[0m\n")
+	formattedText := Color.Reset + Color.Cyan + text + Color.Reset
+	fmt.Printf(Color.Green + "Incomming weather request for: " + formattedText + "\n")
 	resp, err := http.Get("https://api.weather.gov/points/" + text)
 	if err != nil {
-		fmt.Printf("\033[31mError: " + err.Error() + "\033[0m\n")
+		formattedText = Color.Red + "Error: " + err.Error() + Color.Reset
+		fmt.Printf(formattedText + "\n")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("\033[31mError: " + err.Error() + "\033[0m\n")
+		formattedText = Color.Red + "Error: " + err.Error() + Color.Reset
+		fmt.Printf(formattedText + "\n")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	err = json.Unmarshal([]byte(body), &wt)
 	if err != nil {
-		fmt.Printf("\033[31mError: " + err.Error() + "\033[0m\n")
+		formattedText = Color.Red + "Error: " + err.Error() + Color.Reset
+		fmt.Printf(formattedText + "\n")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	resp, err = http.Get(wt.Properties.Forecast)
 	if err != nil {
-		fmt.Printf("\033[31mError: " + err.Error() + "\033[0m\n")
+		formattedText = Color.Red + "Error: " + err.Error() + Color.Reset
+		fmt.Printf(formattedText + "\n")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("\033[31mError: " + err.Error() + "\033[0m\n")
+		formattedText = Color.Red + "Error: " + err.Error() + Color.Reset
+		fmt.Printf(formattedText + "\n")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	err = json.Unmarshal([]byte(body), &f)
 	if err != nil {
-		fmt.Printf("\033[31mError: " + err.Error() + "\033[0m\n")
+		formattedText = Color.Red + "Error: " + err.Error() + Color.Reset
+		fmt.Printf(formattedText + "\n")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -171,7 +179,8 @@ func getWeatherInfo(w http.ResponseWriter, r *http.Request) {
 
 	toMM, err := json.Marshal(rs)
 	if err != nil {
-		fmt.Printf("\033[31mError: " + err.Error() + "\033[0m\n")
+		formattedText = Color.Red + "Error: " + err.Error() + Color.Reset
+		fmt.Printf(formattedText + "\n")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}

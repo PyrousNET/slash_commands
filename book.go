@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/pyrousnet/slash_commands/Color"
 	"github.com/pyrousnet/slash_commands/MatterMost"
 	"io/ioutil"
 	"net/http"
@@ -73,23 +74,27 @@ func getBookInfo(w http.ResponseWriter, r *http.Request) {
 	rawText := r.URL.Query().Get("text")
 	text := strings.Replace(rawText, " ", "+", -1)
 
-	fmt.Printf("\033[32mIncomming book request for:\033[0m\033[36m " + rawText + "\033[0m\n")
+	formattedText := Color.Reset + Color.Cyan + text + Color.Reset
+	fmt.Printf(Color.Green + "Incomming book request for: " + formattedText + "\n")
 
 	resp, err := http.Get("https://openlibrary.org/search.json?q=" + text)
 	if err != nil {
-		fmt.Printf("\033[31mError: " + err.Error() + "\033[0m\n")
+		formattedText = Color.Red + "Error: " + err.Error() + Color.Reset
+		fmt.Printf(formattedText + "\n")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("\033[31mError: " + err.Error() + "\033[0m\n")
+		formattedText = Color.Red + "Error: " + err.Error() + Color.Reset
+		fmt.Printf(formattedText + "\n")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 
 	err = json.Unmarshal([]byte(body), &b)
 	if err != nil {
-		fmt.Printf("\033[31mError: " + err.Error() + "\033[0m\n")
+		formattedText = Color.Red + "Error: " + err.Error() + Color.Reset
+		fmt.Printf(formattedText + "\n")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 
@@ -120,8 +125,9 @@ func getBookInfo(w http.ResponseWriter, r *http.Request) {
 
 	toMM, err := json.Marshal(rs)
 	if err != nil {
-		fmt.Printf("\033[31mError: " + err.Error() + "\033[0m\n")
-		fmt.Printf("Error: %s", err)
+		formattedText = Color.Red + "Error: " + err.Error() + Color.Reset
+		fmt.Printf(formattedText + "\n")
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
