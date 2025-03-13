@@ -1,19 +1,13 @@
 package MatterMost
 
-type (
-	HamCallSign struct {
-		CallSign string
-		Name     string
-		City     string
-		Last3    string
-		Class    string
-		Status   string
-	}
-	Response struct {
-		ResponseType string `json:"response_type"`
-		Text         string `json:"text"`
-	}
-)
+type HamCallSign struct {
+	CallSign string
+	Name     string
+	City     string
+	Last3    string
+	Class    string
+	Status   string
+}
 
 func (hCS *HamCallSign) GetResponseString() string {
 	return "| Data | Value |\n| :------ | :-------|\n| Callsign | " + hCS.CallSign +
