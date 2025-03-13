@@ -9,10 +9,18 @@ import (
 	"net/url"
 )
 
-func PullFromGiphy(searchTerm string) (error, *Response) {
+type Giphy struct {
+	apiKey string `json:"apiKey"`
+}
+
+func Setup(key string) *Giphy {
+	g := Giphy{apiKey: key}
+	return &g
+}
+
+func (g *Giphy) PullFromGiphy(searchTerm string) (error, *Response) {
 	var r Response
-	giphyAPIKey := "YOUR_GIPHY_API_KEY"
-	searchURL := "https://api.giphy.com/v1/gifs/search?api_key=" + giphyAPIKey + "&q=" + url.QueryEscape(searchTerm) + "&limit=5"
+	searchURL := "https://api.giphy.com/v1/gifs/search?api_key=" + g.apiKey + "&q=" + url.QueryEscape(searchTerm) + "&limit=5"
 
 	resp, err := http.Get(searchURL)
 	if err != nil {

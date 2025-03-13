@@ -17,7 +17,8 @@ func giphyCommand(w http.ResponseWriter, r *http.Request) {
 	formattedText := Color.Reset + Color.Cyan + text + Color.Reset
 	fmt.Printf(Color.Green + "Incomming giphy request for: " + formattedText + Color.Reset)
 
-	err, giphyResponse := Giphy.PullFromGiphy(text)
+	g := Giphy.Setup("YOUR_GIPHY_API_KEY") // Replace YOUR_GIPHY_API_KEY with your actual Giphy API key
+	err, giphyResponse := g.PullFromGiphy(text)
 	if err != nil {
 		http.Error(w, "Error calling GIPHY API", http.StatusInternalServerError)
 		fmt.Println(Color.Red + "GIPHY API Error: " + err.Error() + Color.Reset)
