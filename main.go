@@ -17,6 +17,13 @@ func main() {
 	fmt.Println("Setting up Weather route.")
 	mux.HandleFunc("/weather", getWeatherInfo)
 
+	// Giphy routes
+	fmt.Println("Setting up Giphy route.")
+	mux.HandleFunc("/giphy", giphyCommand)
+	mux.HandleFunc("/giphy/next", giphyNext)
+	mux.HandleFunc("/giphy/previous", giphyPrevious)
+	mux.HandleFunc("/giphy/select", giphySelect)
+
 	fmt.Println("Listening for connections on port 4000")
 	err := http.ListenAndServe(":4000", mux)
 
