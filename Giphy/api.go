@@ -7,20 +7,27 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 )
 
 type Giphy struct {
 	apiKey string `json:"apiKey"`
+	host   string `json:"host"`
+	limit  int    `json:"limit"`
 }
 
 func Setup(key string) *Giphy {
-	g := Giphy{apiKey: key}
+	g := Giphy{
+		apiKey: key,
+		host:   "https://api.giphy.com",
+		limit:  5,
+	}
 	return &g
 }
 
 func (g *Giphy) PullFromGiphy(searchTerm string) (error, *Response) {
 	var r Response
-	searchURL := "https://api.giphy.com/v1/gifs/search?api_key=" + g.apiKey + "&q=" + url.QueryEscape(searchTerm) + "&limit=5"
+	searchURL := g.host + "/v1/gifs/search?api_key=" + g.apiKey + "&q=" + url.QueryEscape(searchTerm) + "&limit=" + strconv.Itoa(g.limit)
 
 	resp, err := http.Get(searchURL)
 	if err != nil {

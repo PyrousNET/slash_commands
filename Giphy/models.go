@@ -8,10 +8,10 @@ type Response struct {
 		Images struct {
 			Preview struct {
 				URL string `json:"url"`
-			} `json:"url"`
+			} `json:"downsized_small"`
 			Original struct {
 				URL string `json:"url"`
-			} `json:"url"`
+			} `json:"original"`
 		} `json:"images"`
 	} `json:"data"`
 }

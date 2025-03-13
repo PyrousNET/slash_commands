@@ -8,6 +8,7 @@ import (
 	"github.com/pyrousnet/slash_commands/MatterMost"
 	"log"
 	"net/http"
+    "os"
 )
 
 var giphyStates = make(map[string]Giphy.GiphyState)
@@ -17,7 +18,9 @@ func giphyCommand(w http.ResponseWriter, r *http.Request) {
 	formattedText := Color.Reset + Color.Cyan + text + Color.Reset
 	fmt.Printf(Color.Green + "Incomming giphy request for: " + formattedText + Color.Reset)
 
-	g := Giphy.Setup("YOUR_GIPHY_API_KEY") // Replace YOUR_GIPHY_API_KEY with your actual Giphy API key
+	apiKey := os.Getenv("GIPHY_API_KEY")
+	fmt.Println(apiKey)
+	g := Giphy.Setup(apiKey) // Replace YOUR_GIPHY_API_KEY with your actual Giphy API key
 	err, giphyResponse := g.PullFromGiphy(text)
 	if err != nil {
 		http.Error(w, "Error calling GIPHY API", http.StatusInternalServerError)
