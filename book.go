@@ -113,7 +113,9 @@ func getBookInfo(w http.ResponseWriter, r *http.Request) {
 			formattedResult += "| :------ | :-------|"
 			formattedResult += "\n| Book " + strconv.Itoa(i+1) + " Title | " + book.Title + " |"
 			formattedResult += "\n| Book " + strconv.Itoa(i+1) + " Author | " + book.AuthorName[0] + " |"
-			formattedResult += "\n| Book " + strconv.Itoa(i+1) + " ISBN | " + book.Isbn[0] + " |"
+			if len(book.Isbn) > 0 {
+				formattedResult += "\n| Book " + strconv.Itoa(i+1) + " ISBN | " + book.Isbn[0] + " |"
+			}
 			formattedResult += "\n\n"
 			if i > 1 { // Only print 3 books 0, 1, and 2 (breaks when i == 2)
 				break
