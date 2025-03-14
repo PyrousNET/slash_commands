@@ -33,7 +33,19 @@ func TestGiphy_PullFromGiphy(t *testing.T) {
 			args: args{
 				searchTerm: "test",
 			},
-			want: &Response{},
+			want: &Response{
+				Data: []struct {
+					Id     string `json:"id"`
+					Images struct {
+						Preview struct {
+							URL string `json:"url"`
+						} `json:"downsized_small"`
+						Original struct {
+							URL string `json:"url"`
+						} `json:"original"`
+					} `json:"images"`
+				}{},
+			},
 		},
 		{
 			name: "test against giphy with a search term",
