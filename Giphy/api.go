@@ -75,6 +75,7 @@ func CreateMatterMostResponse(r Response, currentIndex int, user string, searchT
 	attachments := []MatterMost.Attachment{
 		{
 			ImageUrl: previewURL,
+			Text:     responseText,
 			Actions: []MatterMost.Action{
 				{
 					Id:   "gif-previous",
@@ -88,12 +89,13 @@ func CreateMatterMostResponse(r Response, currentIndex int, user string, searchT
 					},
 				},
 				{
-					Id:   "gif-next",
+					Id:   "update",
 					Name: "▶️ Next",
 					Integration: MatterMost.Integration{
 						URL: "http://host.docker.internal:4000/giphy/next?text=" + searchTerm,
 						Context: map[string]string{
 							"current_index": strconv.Itoa(currentIndex),
+							"action":        "/giphy/next",
 							"direction":     "next",
 						},
 					},
@@ -114,7 +116,6 @@ func CreateMatterMostResponse(r Response, currentIndex int, user string, searchT
 
 	return MatterMost.Response{
 		ResponseType: "ephemeral",
-		Text:         responseText,
 		Attachments:  attachments,
 	}
 }

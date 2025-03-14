@@ -31,8 +31,53 @@ func giphyCommand(w http.ResponseWriter, r *http.Request) {
 	giphyStates[text] = Giphy.GiphyState{Results: *giphyResponse, CurrentIndex: 0, SearchTerm: text, User: userName}
 
 	mmResponse := Giphy.CreateMatterMostResponse(*giphyResponse, 0, userName, text)
+	responseJson, err := json.Marshal(mmResponse)
+	if err != nil {
+		log.Println(Color.Red + "Error marshalling JSON:" + err.Error() + Color.Reset)
+		http.Error(w, "Error marshalling JSON", http.StatusInternalServerError)
+		return
+	}
+	fmt.Println(string(responseJson))
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(mmResponse)
+	if err != nil {
+		log.Println(Color.Red + "Error encoding JSON:" + err.Error() + Color.Reset)
+		http.Error(w, "Error encoding JSON", http.StatusInternalServerError)
+		return
+	}
+	fmt.Println(Color.Green + "GIPHY request successful" + Color.Reset)
+}
+
+func sendGiphyUpdate(w http.ResponseWriter, imageUrl string) {
+	type (
+		Attachments []struct {
+			ImageURL string `json:"image_url"`
+		}
+		Props struct {
+			Attachments Attachments `json:"attachments"`
+		}
+		Update struct {
+			Message string `json:"message"`
+			Props   Props  `json:"props"`
+		}
+		Response struct {
+			Update Update `json:"update"`
+		}
+	)
+
+	mmResponse := Response{
+		Update: Update{
+			Message: imageUrl,
+			Props: Props{
+				Attachments: Attachments{
+					{
+						ImageURL: imageUrl,
+					},
+				},
+			},
+		},
+	}
+	err := json.NewEncoder(w).Encode(mmResponse)
 	if err != nil {
 		log.Println(Color.Red + "Error encoding JSON:" + err.Error() + Color.Reset)
 		http.Error(w, "Error encoding JSON", http.StatusInternalServerError)
@@ -71,7 +116,8 @@ func giphyNext(w http.ResponseWriter, r *http.Request) {
 		state.CurrentIndex++
 		giphyStates[key] = state
 	}
-	sendGiphyPreview(w, key)
+	//sendGiphyPreview(w, key)
+	sendGiphyUpdate(w, state.Results.Data[state.CurrentIndex].Images.Original.URL)
 }
 
 func giphySelect(w http.ResponseWriter, r *http.Request) {
