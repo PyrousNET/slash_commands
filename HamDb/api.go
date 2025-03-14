@@ -2,10 +2,13 @@ package HamDb
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/pyrousnet/slash_commands/MatterMost"
 	"io/ioutil"
 	"net/http"
 )
+
+var HamDbUrl = "http://api.hamdb.org/v1/"
 
 type (
 	Response struct {
@@ -40,7 +43,10 @@ func PullFromHamDb(callsign string) (error, *MatterMost.HamCallSign) {
 	var r Response
 	var hCS MatterMost.HamCallSign
 
-	resp, err := http.Get("http://api.hamdb.org/v1/" + callsign + "/json")
+	resp, err := http.Get(HamDbUrl + callsign + "/json")
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("Failed to get call sign from hamdb: %s", resp.Status), nil
+	}
 	if err != nil {
 		return err, nil
 	}

@@ -7,6 +7,8 @@ import (
 	"net/http"
 )
 
+var CallookUrl = "http://callook.info/"
+
 type Response struct {
 	Status  string `json:"status"`
 	Type    string `json:"type"`
@@ -46,7 +48,7 @@ func PullFromCallook(callsign string) (error, *MatterMost.HamCallSign) {
 	var r Response
 	var mmr MatterMost.HamCallSign
 
-	resp, err := http.Get("http://callook.info/" + callsign + "/json")
+	resp, err := http.Get(CallookUrl + callsign + "/json")
 	if err != nil {
 		return err, nil
 	}
