@@ -8,7 +8,7 @@ import (
 	"github.com/pyrousnet/slash_commands/MatterMost"
 	"log"
 	"net/http"
-    "os"
+	"os"
 )
 
 var giphyStates = make(map[string]Giphy.GiphyState)
@@ -16,10 +16,9 @@ var giphyStates = make(map[string]Giphy.GiphyState)
 func giphyCommand(w http.ResponseWriter, r *http.Request) {
 	text := r.URL.Query().Get("text")
 	formattedText := Color.Reset + Color.Cyan + text + Color.Reset
-	fmt.Printf(Color.Green + "Incomming giphy request for: " + formattedText + Color.Reset)
+	fmt.Printf(Color.Green+"Incomming giphy request for: %s\n", formattedText+Color.Reset)
 
 	apiKey := os.Getenv("GIPHY_API_KEY")
-	fmt.Println(apiKey)
 	g := Giphy.Setup(apiKey) // Replace YOUR_GIPHY_API_KEY with your actual Giphy API key
 	err, giphyResponse := g.PullFromGiphy(text)
 	if err != nil {
@@ -28,9 +27,10 @@ func giphyCommand(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	giphyStates[text] = Giphy.GiphyState{Results: *giphyResponse, CurrentIndex: 0, SearchTerm: text}
+	userName := r.URL.Query().Get("user_name")
+	giphyStates[text] = Giphy.GiphyState{Results: *giphyResponse, CurrentIndex: 0, SearchTerm: text, User: userName}
 
-	mmResponse := Giphy.CreateMatterMostResponse(*giphyResponse, 0, text)
+	mmResponse := Giphy.CreateMatterMostResponse(*giphyResponse, 0, userName, text)
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(mmResponse)
 	if err != nil {
@@ -43,7 +43,7 @@ func giphyCommand(w http.ResponseWriter, r *http.Request) {
 
 func sendGiphyPreview(w http.ResponseWriter, key string) {
 	state := giphyStates[key]
-	mmResponse := Giphy.CreateMatterMostResponse(state.Results, state.CurrentIndex, state.SearchTerm)
+	mmResponse := Giphy.CreateMatterMostResponse(state.Results, state.CurrentIndex, state.User, state.SearchTerm)
 	w.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(w).Encode(mmResponse)
 	if err != nil {
@@ -55,7 +55,7 @@ func sendGiphyPreview(w http.ResponseWriter, key string) {
 }
 
 func giphyPrevious(w http.ResponseWriter, r *http.Request) {
-	key := r.URL.Query().Get("key")
+	key := r.URL.Query().Get("text")
 	state := giphyStates[key]
 	if state.CurrentIndex > 0 {
 		state.CurrentIndex--
@@ -65,7 +65,7 @@ func giphyPrevious(w http.ResponseWriter, r *http.Request) {
 }
 
 func giphyNext(w http.ResponseWriter, r *http.Request) {
-	key := r.URL.Query().Get("key")
+	key := r.URL.Query().Get("text")
 	state := giphyStates[key]
 	if state.CurrentIndex < len(state.Results.Data)-1 {
 		state.CurrentIndex++
@@ -75,14 +75,21 @@ func giphyNext(w http.ResponseWriter, r *http.Request) {
 }
 
 func giphySelect(w http.ResponseWriter, r *http.Request) {
-	key := r.URL.Query().Get("key")
+	key := r.URL.Query().Get("text")
 	state := giphyStates[key]
+	if state.CurrentIndex < 0 {
+		state.CurrentIndex = 0
+	}
+	if state.CurrentIndex >= len(state.Results.Data) {
+		state.CurrentIndex = len(state.Results.Data) - 1
+	}
 	gif := state.Results.Data[state.CurrentIndex]
 	originalURL := gif.Images.Original.URL
+	userName := r.URL.Query().Get("user_name")
 
 	mmResponse := MatterMost.Response{
 		ResponseType: "in_channel",
-		Text:         "Posted GIF: " + originalURL,
+		Text:         fmt.Sprintf("%s Posted GIF: ![%s](%s)", userName, key, originalURL),
 	}
 	w.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(w).Encode(mmResponse)

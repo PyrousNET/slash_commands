@@ -34,12 +34,13 @@ func TestGiphy_PullFromGiphy(t *testing.T) {
 				searchTerm: "test",
 			},
 			want: &Response{
+				Query: "test",
 				Data: []struct {
 					Id     string `json:"id"`
 					Images struct {
 						Preview struct {
 							URL string `json:"url"`
-						} `json:"downsized_small"`
+						} `json:"downsized"`
 						Original struct {
 							URL string `json:"url"`
 						} `json:"original"`
@@ -59,31 +60,28 @@ func TestGiphy_PullFromGiphy(t *testing.T) {
 				searchTerm: "test",
 			},
 			want: &Response{
+				Query: "test",
 				Data: []struct {
 					Id     string `json:"id"`
 					Images struct {
 						Preview struct {
 							URL string `json:"url"`
-						} `json:"downsized_small"`
+						} `json:"downsized"`
 						Original struct {
 							URL string `json:"url"`
 						} `json:"original"`
 					} `json:"images"`
 				}{
 					{
+						Id: "",
 						Images: struct {
 							Preview struct {
 								URL string `json:"url"`
-							} `json:"downsized_small"`
+							} `json:"downsized"`
 							Original struct {
 								URL string `json:"url"`
 							} `json:"original"`
 						}{
-							Preview: struct {
-								URL string `json:"url"`
-							}{
-								URL: "http://test.com",
-							},
 							Original: struct {
 								URL string `json:"url"`
 							}{

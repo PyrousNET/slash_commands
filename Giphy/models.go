@@ -1,14 +1,17 @@
 package Giphy
 
-import _ "github.com/pyrousnet/slash_commands/MatterMost"
+import (
+	_ "github.com/pyrousnet/slash_commands/MatterMost"
+)
 
 type Response struct {
-	Data []struct {
+	Query string
+	Data  []struct {
 		Id     string `json:"id"`
 		Images struct {
 			Preview struct {
 				URL string `json:"url"`
-			} `json:"downsized_small"`
+			} `json:"downsized"`
 			Original struct {
 				URL string `json:"url"`
 			} `json:"original"`
@@ -20,4 +23,5 @@ type GiphyState struct {
 	Results      Response
 	CurrentIndex int
 	SearchTerm   string
+	User         string
 }
